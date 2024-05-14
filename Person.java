@@ -2,8 +2,8 @@ import java.util.*;
 
 public class Person {
     private String name;
-    private Set<String> followers;
-    private Set<String> following; 
+    private Set<Person> followers;
+    private Set<Person> following; 
 
     //constructor that assigns name to object and also initalizes the sets for followers and following
     public Person(String name) {
@@ -19,12 +19,16 @@ public class Person {
     }
 
 
-        public String getName() {
+        public String getName() { //getter
         return this.name;
     }
 
     public Set<Person> getFollowers() {
         return this.followers;
+    }
+    
+    public int getFollowersSize() {
+        return followers.size();
     }
 
     public Set<Person> getFollowing() {

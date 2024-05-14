@@ -8,19 +8,24 @@ public class FileReader {
     public FileReader(String filePath) {
         this.filePath = filePath;
     }
-    // reads each file line by line and prints it out
 
-    public void displayFileContents() {
+    // Reads each file line by line and processes it
+    public void displayFileContents(SocialNetwork network) {
         File file = new File(filePath);
-
         try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
-
-                System.out.println(line);  // Output the file content line by line
+                String[] parts = line.split("\\s+");
+                if (parts.length > 1) {
+                    String personName = parts[0];
+                    network.addPerson(personName);
+                    for (int i = 1; i < parts.length; i++) {
+                        network.addFollowing(personName, parts[i]);
+                    }
+                }
             }
         } catch (FileNotFoundException e) {
-            System.out.println("An error occurred: " + e.getMessage());
+            System.err.println("An error occurred: " + e.getMessage());
         }
     }
 }

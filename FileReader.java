@@ -15,6 +15,7 @@ public class FileReader {
         try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
+                // splits parts with spaces since each name has a space after it
                 String[] parts = line.split("\\s+");
                 if (parts.length > 1) {
                     String personName = parts[0];

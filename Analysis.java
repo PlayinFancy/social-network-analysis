@@ -15,7 +15,9 @@ public class Analysis {
         System.out.println("Person with most followers: " + network.getPersonWithMostFollowers());
         System.out.println("Person who follows the most: " + network.GetPersonFollowingMostPeople());
         System.out.println("Two degrees of separation from " + firstPerson + ": " + network.getTwoDegreesSeparation(firstPerson));
-        System.out.println("task 5: "  + network.getMedianFollowers());
+        System.out.println("The median value for the number of followers in the network: "  + network.getMedianFollowers());
+
+        System.out.println("Most influentual person in the network: "+ network.findBestPersonForMessageSpread());
 
     }
 }

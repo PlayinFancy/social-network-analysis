@@ -6,11 +6,21 @@ public class SocialNetwork {
     private String firstPersonName = null;
 
     public void addPerson(String name) {
-        people.putIfAbsent(name, new Person(name));
+        // Check if the map does not already contain the person
+        if (people.containsKey(name) == false) {  
+            // If the person is not in the map, add them
+            Person newPerson = new Person(name);
+            //adding them to the network
+            people.put(name, newPerson);
+        }
+        
+        // Check if this is the first person being added
         if (firstPersonName == null) {
-            firstPersonName = name;  // Store the name of the first person added
+            // Store the name of the first person added
+            firstPersonName = name;
         }
     }
+
     //adding 
     public String getFirstPerson() {
         return firstPersonName; 
@@ -36,17 +46,19 @@ public class SocialNetwork {
         people.putIfAbsent(followName, followPerson);
         person.follows(followPerson);
     }*/
-
+    // used the formula to calculate density
+    // got edges by counting the amount of following each person has in the network
     public double calculateDensity() {
         int totalEdges = 0;
         for (Person p : people.values()) {
             totalEdges += p.getFollowing().size();
         }
+        
         int totalPeople = people.size();
         return totalPeople > 1 ? (double) totalEdges / (totalPeople * (totalPeople - 1)) : 0;
     }
 
-
+    // goes through the network and compares person followers with next person followers and replace name with most followers if the next person has more followers
     public String getPersonWithMostFollowers() {
         String nameWithMostFollowers = "No one";
         int maxFollowers = -1;
@@ -80,24 +92,14 @@ public class SocialNetwork {
 
 
 
+//used for debugging 
 
-    public void printNetwork() {
-        System.out.println("Network Members:");
-        for (Map.Entry<String, Person> entry : people.entrySet()) {
-            String name = entry.getKey();
-            Person person = entry.getValue();
-            System.out.println(name + " -> Followers: " + person.getFollowers().size() + ", Following: " + person.getFollowing().size());
-        }
-    }
-
+    // used for debugging
     public void printFollowerCounts() {
         System.out.println("Follower Counts:");
-        people.values().stream()
-            .sorted(Comparator.comparing(Person::getName))  // Sort alphabetically for easier verification
-            .forEach(p -> System.out.println(p.getName() + " has " + p.getFollowers().size() + " followers."));
     }
 
-
+    // makes 2 sets 1 for 1st degree and goes through people network and checks if they are following the specified person if they are they are added to 1st degree then it goes through the first degree follower's followers to add them to 2nd degree but it also makes sure they are not part of 1st degree or the person themself
     public int getTwoDegreesSeparation(String personName) {
         Person person = people.get(personName);
         if (person == null) return 0;
@@ -105,6 +107,7 @@ public class SocialNetwork {
         Set<Person> oneDegreeFollowers = new HashSet<>();
         // Identify all people who follow the person directly
         for (Person p : people.values()) {
+            //checks for everyone following the person and adding them to one degree followers
             if (p.getFollowing().contains(person)) {
                 oneDegreeFollowers.add(p);
             }
@@ -123,8 +126,9 @@ public class SocialNetwork {
         return twoDegrees.size();
     }
 
-
+    // makes a list for all the follower counts and sorts it then finds the median from that
     public int getMedianFollowers() {
+        // makes a list for all the follower counts 
         List<Integer> followerCounts = new ArrayList<>();
         for (Person person : people.values()) {
             followerCounts.add(person.getFollowers().size());
@@ -136,6 +140,7 @@ public class SocialNetwork {
         }
 
         int middle = followerCounts.size() / 2;
+
         if (followerCounts.size() % 2 == 1) {
             return followerCounts.get(middle);
         } else {
@@ -146,9 +151,43 @@ public class SocialNetwork {
 
 
 
+    public String findBestPersonForMessageSpread() {
+        Map<Person, Integer> reachMap = new HashMap<>();
+        int maxValue= -1;
+        Person maxKey = null;
 
+        for (Person starter : people.values()) {
+            Set<Person> seen = new HashSet<>();
+            List<Person> theFollowersToGoThrough = new ArrayList<>();
+            theFollowersToGoThrough.add(starter);
+            seen.add(starter);  // Adding the starter to the seen set at the beginning
 
+            while (theFollowersToGoThrough.size() != 0) {
+                //adds the person to current then removes them from the people to go through
+                Person current = theFollowersToGoThrough.get(0);  
+                theFollowersToGoThrough.remove(0);  
+                for (Person follower : current.getFollowers()) {
+                    if (!seen.contains(follower)) {
+                        seen.add(follower);  // Add new follower to the seen set
+                        theFollowersToGoThrough.add(follower);  // Add to list to process their followers in the next iterations
+                    }
+                }
+            }
 
+            // Store the reach size, excluding the person themselves
+            reachMap.put(starter, seen.size() - 1);
+        }
+
+        // Find the person with the maximum reach
+        for (Map.Entry<Person, Integer> entry : reachMap.entrySet()) {
+            if (entry.getValue() > maxValue || (entry.getValue() == maxValue && entry.getKey().getName().compareTo(maxKey.getName()) < 0)) {
+                maxValue = entry.getValue();
+                maxKey = entry.getKey();
+            }
+        }
+
+        return maxKey.getName();
+    }
 
 
 

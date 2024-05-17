@@ -73,22 +73,43 @@ public class SocialNetwork {
         return nameWithMostFollowers;
     }
 
+
     public String GetPersonFollowingMostPeople() {
-        String nameWithMostFollowing = "No one";
-        int maxFollowing = -1;
-        // iterates through the values of the hashmap of the people in the network which contains objects of person
+        //initialize the variables that will store the person with most followers
+        String nameWithMostFollowing = "not ready yet or no one"; 
+        int maxFollowing = -1; 
+
+        //going through network and checking everyone following count and comparing then replacing if higher
         for (Person person : people.values()) {
-            // gets the the size of the following set for each person in the network
-            int followingCount = person.getFollowing().size();
-            // if the person is following more people than the max following person theyll become the max following
-            //also if the follower counts equals up to the same as max itll check alphabetical order of the name
-            if (followingCount > maxFollowing || (followingCount == maxFollowing && person.getName().compareTo(nameWithMostFollowing) < 0)) {
-                maxFollowing = followingCount;
-                nameWithMostFollowing = person.getName();
+            int followingCount = 0; //to store current person followers
+
+            // loop again to count manually how many people they're following
+            for (Person p : people.values()) {
+                if (p.getName().equals(person.getName())) { //just to make sure 
+                    for (Person follower : p.getFollowing()) { // count all their followers
+                        followingCount++;
+                    }
+                }
+            }
+
+            // if this person is following more people than the current max
+            if (followingCount > maxFollowing) {
+                maxFollowing = followingCount; // update max following
+                nameWithMostFollowing = person.getName(); // update name with most following
+            } else if (followingCount == maxFollowing) {
+                // alphabetical compare
+                if (person.getName().compareTo(nameWithMostFollowing) < 0) {
+                    nameWithMostFollowing = person.getName(); //swap if alphabetically first
+                }
             }
         }
-        return nameWithMostFollowing;
+
+        return nameWithMostFollowing; 
     }
+
+
+
+
 
 
 
